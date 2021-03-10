@@ -30,6 +30,8 @@ router.post('/', async (req,res, next) => {
     const addedPost = await client.query('INSERT INTO posts (userId, title, content) VALUES($1,$2,$3) RETURNING *', [authorId, title, content]);
     const postId = addedPost.rows[0].id;
 
+    const addedUpvoted = await client.query('INSERT INTO upvotes (userId, postId) VALUES ($1,$2)',[authorId, postId])
+
     res.redirect(`/posts/${postId}`)
   } catch (error) {
     next(error);
