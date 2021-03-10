@@ -15,6 +15,27 @@ router.get("/", async (req, res, next) => {
   } catch (error) { next(error) }
 });
 
+router.post('/', async (req,res, next) => {
+  try {
+    const name = req.body.name;
+    const title = req.body.title;
+    const content = req.body.content;
+
+    let authorData = await client.query('SELECT * from users WHERE name = $1', [name]);
+    if(!authorData.rows.length){
+      authorData = await client.query('INSERT INTO users (name) VALUES ($1) RETURNING *', [name]);
+    }
+    const authorId = authorData.rows[0].id;
+
+    const addedPost = await client.query('INSERT INTO posts (userId, title, content) VALUES($1,$2,$3) RETURNING *', [authorId, title, content]);
+    const postId = addedPost.rows[0].id;
+
+    res.redirect(`/posts/${postId}`)
+  } catch (error) {
+    next(error);
+  }
+})
+
 router.get("/add", (req, res) => {
   res.send(addPost());
 });
