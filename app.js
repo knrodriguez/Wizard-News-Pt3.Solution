@@ -12,6 +12,10 @@ app.use(express.static(__dirname + "/public"));
 
 app.use('/posts', routes);
 
+app.get("/", (req, res) => {
+  res.redirect("/posts");
+})
+
 const PORT = 1337;
 
 app.listen(PORT, () => {
